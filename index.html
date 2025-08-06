@@ -1,1 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope&family=Newsreader&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playlist Submission</title>
+  <style>
+:root {
+  --spotify-green: #1DB954;
+  --apple-pink: #f85878;
+  --spotify-bg: #191414;
+  --apple-bg: #F9F9F9;
+  --font-spotify: 'Manrope', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-apple: -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-claude: 'Instrument Serif', serif;
+  --font-default: 'Manrope', sans-serif;
+}
 
+body {
+  margin: 0;
+  font-family: var(--font-claude);
+  letter-spacing: 1px;
+  background-color: #fff4ec;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  transition: background-color 1s ease, color 0.8s ease;
+}
+
+.screen {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  transition: top 0.8s ease;
+}
+
+.active {
+  top: 0;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  color: white;
+  margin: 1rem auto;
+  cursor: pointer;
+  font-weight: bold;
+  width: fit-content;
+}
+
+.spotify-btn {
+  background-color: var(--spotify-green);
+}
+
+.apple-btn {
+  background-color: var(--apple-pink);
+}
+
+input[type="text"] {
+  padding: 0.8rem;
+  width: 80%;
+  border-radius: 0.5rem;
+  border: none;
+  margin-top: 1rem;
+}
+
+.arrow-btn {
+  background-color: var(--spotify-green);
+  border-radius: 1rem;
+  padding: 0.6rem 1rem;
+  display: inline-block;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+.help-link {
+  margin-top: 1rem;
+  display: block;
+  font-size: 0.9rem;
+  color: #888;
+  text-decoration: underline;
+}
+
+.confetti {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  animation: pop 0.5s ease-in-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+  </style>
+</head>
+<body>
+
+  <div class="screen active" id="welcome">
+    <h1>Welcome to Amberly's iPods!</h1>
+  </div>
+
+  <div class="screen" id="step1">
+    <h1>Let's get your playlists on your iPod!</h1>
+  </div>
+
+  <div class="screen" id="step2">
+    <h1>Choose your music provider.</h1>
+    <div class="button spotify-btn" onclick="chooseProvider('spotify')">
+      <img src="spotify.png" alt="Spotify" style="height:24px;margin-right:8px;">
+      Spotify
+    </div>
+    <div class="button apple-btn" onclick="chooseProvider('apple')">
+      <img src="applemusic.png" alt="Apple Music" style="height:24px;margin-right:8px;">
+      Apple Music
+    </div>
+  </div>
+
+  <div class="screen" id="provider"></div>
+  <div class="screen" id="nameEmail"></div>
+  <div class="screen" id="confirmation"></div>
+
+  <script>
+    const screens = ["welcome", "step1", "step2"];
+    let currentStep = 0;
+
+    function nextStep() {
+      if (currentStep < screens.length - 1) {
+        document.getElementById(screens[currentStep]).classList.remove("active");
+        currentStep++;
+        document.getElementById(screens[currentStep]).classList.add("active");
+      }
+    }
+
+    setTimeout(nextStep, 2000);
+    setTimeout(nextStep, 4000);
+
+    function chooseProvider(provider) {
+      document.body.style.fontFamily = provider === 'apple' ? 'var(--font-apple)' : 'var(--font-default)';
+      document.body.style.backgroundColor = provider === 'apple' ? 'var(--apple-bg)' : 'var(--spotify-bg)';
+      document.body.style.color = provider === 'apple' ? 'black' : 'white';
+      document.getElementById("step2").classList.remove("active");
+      const box = document.getElementById("provider");
+      box.innerHTML = `
+        <img src="${provider === 'apple' ? 'applemusic.png' : 'spotify.png'}" style="margin-top:2rem;height:64px;"><br>
+        <h1 style="color:${provider === 'apple' ? '#000' : '#fff'}">${provider === 'apple' ? 'Apple Music' : 'Spotify'}</h1>
+        <input id="playlistUrl" type="text" placeholder="${provider === 'apple' ? 'Apple Music playlist URL (e.g https://music.apple.com/us/playlist/random-stuff)' : 'Spotify playlist URL (e.g. https://open.spotify.com/playlist/12345678)'}">
+        <span class="arrow-btn" style="background-color:${provider === 'apple' ? 'var(--apple-pink)' : 'var(--spotify-green)'}" onclick="submitUrl('${provider}')">
+          <img src="${provider === 'apple' ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
+        </span>
+        <a class="help-link" href="${provider === 'apple' ? 'https://support.apple.com/en-us/118235' : 'https://support.spotify.com/us/article/share-links/'}" target="_blank">
+          How do I share my ${provider === 'apple' ? 'Apple Music' : 'Spotify'} playlist?
+        </a>
+      `;
+      box.classList.add("active");
+    }
+
+    function submitUrl(provider) {
+      const url = document.getElementById("playlistUrl").value;
+      const valid = provider === 'apple' ? url.includes("music.apple.com") : url.includes("open.spotify.com/playlist");
+      if (!valid) return alert("Please enter a valid playlist URL.");
+      document.getElementById("provider").classList.remove("active");
+      const nameEmail = document.getElementById("nameEmail");
+      const isApple = provider === 'apple';
+      const textColor = isApple ? 'black' : 'white';
+      nameEmail.innerHTML = `
+        <h1 style="color:${textColor}">What's your name?</h1>
+        <input id="userName" type="text" placeholder="First & Last Name">
+        <br><br><h1 style="color:${textColor}">What's your email?</h1>
+        <p style="color:${textColor}">We need this to find your specific order.</p>
+        <input id="userEmail" type="text" placeholder="email@example.com" onblur="checkEmail()">
+        <br><br><div class="arrow-btn" onclick="showConfirmation()">
+          <img src="${isApple ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
+        </div>
+      `;
+      nameEmail.classList.add("active");
+    }
+
+    function checkEmail() {
+      const email = document.getElementById("userEmail").value;
+      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+        alert("Please enter a valid email address.");
+      }
+    }
+
+    function showConfirmation() {
+      const name = document.getElementById("userName").value;
+      const email = document.getElementById("userEmail").value;
+      const playlist = document.getElementById("playlistUrl").value;
+
+      if (!name || !email || !playlist) return alert("Fill out all fields!");
+
+      fetch("https://formspree.io/f/xldlpqjl", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          playlist: playlist,
+          submitted_at: new Date().toISOString()
+        })
+      });
+
+      document.getElementById("nameEmail").classList.remove("active");
+      document.body.style.backgroundColor = "white";
+      document.body.style.color = "black";
+      const conf = document.getElementById("confirmation");
+      conf.innerHTML = `
+        <div class="confetti">🎉</div>
+        <h1>You're all set!</h1>
+        <p>You should receive a confirmation email within the next 2–5 business days when we have your iPod ready and pre-loaded with all of your music.</p>
+      `;
+      conf.classList.add("active");
+    }
+  </script>
+</body>
+</html>
