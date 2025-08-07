@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>add playlist > awesomesauce.mp3</title>
+  <title>awesomesauce.mp3</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -24,7 +24,6 @@
     }
 
     body {
-      background: linear-gradient(135deg, #f4f4f4, #ffffff);
       font-family: var(--font-default);
       color: #111;
       display: flex;
@@ -32,7 +31,13 @@
       align-items: center;
       height: 100vh;
       overflow: hidden;
-      transition: all 0.8s ease;
+      transition: background-color 0.8s ease, color 0.8s ease;
+      background-color: var(--apple-bg);
+    }
+
+    body.dark {
+      background-color: var(--spotify-bg);
+      color: white;
     }
 
     .screen {
@@ -65,12 +70,18 @@
       justify-content: center;
       padding: 1rem 2rem;
       border-radius: 2rem;
-      background: #333;
-      color: #fff;
       margin: 1rem auto;
       cursor: pointer;
       font-weight: 600;
       transition: all 0.3s ease;
+      width: 90%;
+      max-width: 300px;
+      font-size: 1rem;
+    }
+
+    .button img {
+      height: 24px;
+      margin-right: 8px;
     }
 
     .button:hover {
@@ -80,10 +91,12 @@
 
     .spotify-btn {
       background-color: var(--spotify-green);
+      color: white;
     }
 
     .apple-btn {
       background-color: var(--apple-pink);
+      color: white;
     }
 
     input[type="text"] {
@@ -121,6 +134,10 @@
       text-decoration: underline;
     }
 
+    body.dark .help-link {
+      color: #ccc;
+    }
+
     .confetti {
       font-size: 2rem;
       margin-bottom: 1rem;
@@ -129,12 +146,10 @@
     p {
       margin-top: 0.5rem;
       font-size: 0.95rem;
-      color: #333;
     }
   </style>
 </head>
 <body>
-
   <div class="screen active" id="welcome">
     <h1>Welcome to awesomesauce.mp3</h1>
   </div>
@@ -146,11 +161,11 @@
   <div class="screen" id="step2">
     <h1>Choose your music provider.</h1>
     <div class="button spotify-btn" onclick="chooseProvider('spotify')">
-      <img src="spotify.png" alt="Spotify" style="height:24px;margin-right:8px;">
+      <img src="spotify.png" alt="Spotify">
       Spotify
     </div>
     <div class="button apple-btn" onclick="chooseProvider('apple')">
-      <img src="applemusic.png" alt="Apple Music" style="height:24px;margin-right:8px;">
+      <img src="applemusic.png" alt="Apple Music">
       Apple Music
     </div>
   </div>
@@ -179,80 +194,6 @@
       const isApple = provider === 'apple';
       document.body.classList.toggle('dark', !isApple);
       document.body.style.fontFamily = isApple ? 'var(--font-apple)' : 'var(--font-spotify)';
-      document.body.style.backgroundColor = isApple ? 'var(--apple-bg)' : 'var(--spotify-bg)';
-      document.body.style.color = isApple ? 'black' : 'white';
 
       const arrowColor = isApple ? 'var(--apple-pink)' : 'var(--spotify-green)';
-      const box = document.getElementById("provider");
-      box.innerHTML = `
-        <img src="${isApple ? 'applemusic.png' : 'spotify.png'}" style="margin-top:2rem;height:64px;"><br>
-        <h1>${isApple ? 'Apple Music' : 'Spotify'}</h1>
-        <input id="playlistUrl" type="text" placeholder="${isApple ? 'Apple Music playlist URL (e.g https://music.apple.com/us/playlist/...)' : 'Spotify playlist URL (e.g. https://open.spotify.com/playlist/...)'}">
-        <div class="arrow-btn" style="background-color: ${arrowColor};" onclick="submitUrl('${provider}')">
-          <img src="${isApple ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
-        </div>
-        <a class="help-link" href="${isApple ? 'https://support.apple.com/en-us/118235' : 'https://support.spotify.com/us/article/share-links/'}" target="_blank">
-          How do I share my ${isApple ? 'Apple Music' : 'Spotify'} playlist?
-        </a>
-      `;
-      box.classList.add("active");
-    }
-
-    function submitUrl(provider) {
-      const url = document.getElementById("playlistUrl").value;
-      const valid = provider === 'apple' ? url.includes("music.apple.com") : url.includes("open.spotify.com/playlist");
-      if (!valid) return alert("Please enter a valid playlist URL.");
-      document.getElementById("provider").classList.remove("active");
-
-      const arrowColor = provider === 'apple' ? 'var(--apple-pink)' : 'var(--spotify-green)';
-      const box = document.getElementById("nameEmail");
-      const isApple = provider === 'apple';
-      const color = isApple ? 'black' : 'white';
-
-      box.innerHTML = `
-        <h1 style="color:${color}">What's your name?</h1>
-        <input id="userName" type="text" placeholder="First & Last Name">
-        <h1 style="color:${color};margin-top:2rem">What's your email?</h1>
-        <p style="color:${color}">We need this to find your specific order.</p>
-        <input id="userEmail" type="text" placeholder="email@example.com">
-        <div class="arrow-btn" style="background-color: ${arrowColor};margin-top:1rem" onclick="showConfirmation()">
-          <img src="${isApple ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
-        </div>
-      `;
-      box.classList.add("active");
-    }
-
-    function showConfirmation() {
-      const name = document.getElementById("userName").value;
-      const email = document.getElementById("userEmail").value;
-      const playlist = document.getElementById("playlistUrl").value;
-
-      if (!name || !email || !playlist) return alert("Fill out all fields!");
-
-      fetch("https://formspree.io/f/xldlpqjl", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          playlist,
-          submitted_at: new Date().toISOString()
-        })
-      });
-
-      document.getElementById("nameEmail").classList.remove("active");
-      document.body.style.backgroundColor = "white";
-      document.body.style.color = "black";
-      document.body.classList.remove("dark");
-
-      const conf = document.getElementById("confirmation");
-      conf.innerHTML = `
-        <div class="confetti">🎉</div>
-        <h1>You're all set!</h1>
-        <p>You should receive a confirmation email within 2–5 business days once your iPod is ready and loaded with your music.</p>
-      `;
-      conf.classList.add("active");
-    }
-  </script>
-</body>
-</html>
+      const box = document.getElementById
