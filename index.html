@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>awesomesauce.mp3</title>
+  <title>add playlist > awesomesauce.mp3</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -44,11 +44,13 @@
       max-width: 400px;
       padding: 2rem;
       transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
     }
 
     .active {
       opacity: 1;
       transform: scale(1);
+      pointer-events: auto;
     }
 
     h1 {
@@ -91,6 +93,14 @@
       border: 2px solid #ccc;
       font-size: 1rem;
       margin-bottom: 1rem;
+      background-color: #fff;
+      color: #000;
+    }
+
+    body.dark input[type="text"] {
+      background-color: #333;
+      color: #fff;
+      border-color: #666;
     }
 
     .arrow-btn {
@@ -152,7 +162,6 @@
   <script>
     let selectedProvider = null;
 
-    // Replace nextStep logic with time-based fades
     setTimeout(() => {
       document.getElementById("welcome").classList.remove("active");
       document.getElementById("step1").classList.add("active");
@@ -167,21 +176,23 @@
       selectedProvider = provider;
       document.getElementById("step2").classList.remove("active");
 
-      document.body.style.fontFamily = provider === 'apple' ? 'var(--font-apple)' : 'var(--font-spotify)';
-      document.body.style.backgroundColor = provider === 'apple' ? 'var(--apple-bg)' : 'var(--spotify-bg)';
-      document.body.style.color = provider === 'apple' ? 'black' : 'white';
+      const isApple = provider === 'apple';
+      document.body.classList.toggle('dark', !isApple);
+      document.body.style.fontFamily = isApple ? 'var(--font-apple)' : 'var(--font-spotify)';
+      document.body.style.backgroundColor = isApple ? 'var(--apple-bg)' : 'var(--spotify-bg)';
+      document.body.style.color = isApple ? 'black' : 'white';
 
-      const arrowColor = provider === 'apple' ? 'var(--apple-pink)' : 'var(--spotify-green)';
+      const arrowColor = isApple ? 'var(--apple-pink)' : 'var(--spotify-green)';
       const box = document.getElementById("provider");
       box.innerHTML = `
-        <img src="${provider === 'apple' ? 'applemusic.png' : 'spotify.png'}" style="margin-top:2rem;height:64px;"><br>
-        <h1>${provider === 'apple' ? 'Apple Music' : 'Spotify'}</h1>
-        <input id="playlistUrl" type="text" placeholder="${provider === 'apple' ? 'Apple Music playlist URL (e.g https://music.apple.com/us/playlist/...)' : 'Spotify playlist URL (e.g. https://open.spotify.com/playlist/...)'}">
+        <img src="${isApple ? 'applemusic.png' : 'spotify.png'}" style="margin-top:2rem;height:64px;"><br>
+        <h1>${isApple ? 'Apple Music' : 'Spotify'}</h1>
+        <input id="playlistUrl" type="text" placeholder="${isApple ? 'Apple Music playlist URL (e.g https://music.apple.com/us/playlist/...)' : 'Spotify playlist URL (e.g. https://open.spotify.com/playlist/...)'}">
         <div class="arrow-btn" style="background-color: ${arrowColor};" onclick="submitUrl('${provider}')">
-          <img src="${provider === 'apple' ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
+          <img src="${isApple ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
         </div>
-        <a class="help-link" href="${provider === 'apple' ? 'https://support.apple.com/en-us/118235' : 'https://support.spotify.com/us/article/share-links/'}" target="_blank">
-          How do I share my ${provider === 'apple' ? 'Apple Music' : 'Spotify'} playlist?
+        <a class="help-link" href="${isApple ? 'https://support.apple.com/en-us/118235' : 'https://support.spotify.com/us/article/share-links/'}" target="_blank">
+          How do I share my ${isApple ? 'Apple Music' : 'Spotify'} playlist?
         </a>
       `;
       box.classList.add("active");
@@ -232,6 +243,7 @@
       document.getElementById("nameEmail").classList.remove("active");
       document.body.style.backgroundColor = "white";
       document.body.style.color = "black";
+      document.body.classList.remove("dark");
 
       const conf = document.getElementById("confirmation");
       conf.innerHTML = `
