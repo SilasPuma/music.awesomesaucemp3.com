@@ -103,22 +103,6 @@
       transition: background-color 0.3s ease;
     }
 
-    .arrow-btn.spotify {
-      background-color: var(--spotify-green);
-    }
-
-    .arrow-btn.apple {
-      background-color: var(--apple-pink);
-    }
-
-    .arrow-btn.spotify:hover {
-      background-color: #17a144;
-    }
-
-    .arrow-btn.apple:hover {
-      background-color: #e6486d;
-    }
-
     .help-link {
       margin-top: 1rem;
       display: block;
@@ -183,16 +167,19 @@
 
     function chooseProvider(provider) {
       selectedProvider = provider;
+      document.getElementById("step2").classList.remove("active");
+
       document.body.style.fontFamily = provider === 'apple' ? 'var(--font-apple)' : 'var(--font-spotify)';
       document.body.style.backgroundColor = provider === 'apple' ? 'var(--apple-bg)' : 'var(--spotify-bg)';
       document.body.style.color = provider === 'apple' ? 'black' : 'white';
-      nextStep();
+
+      const arrowColor = provider === 'apple' ? 'var(--apple-pink)' : 'var(--spotify-green)';
       const box = document.getElementById("provider");
       box.innerHTML = `
         <img src="${provider === 'apple' ? 'applemusic.png' : 'spotify.png'}" style="margin-top:2rem;height:64px;"><br>
         <h1>${provider === 'apple' ? 'Apple Music' : 'Spotify'}</h1>
         <input id="playlistUrl" type="text" placeholder="${provider === 'apple' ? 'Apple Music playlist URL (e.g https://music.apple.com/us/playlist/...)' : 'Spotify playlist URL (e.g. https://open.spotify.com/playlist/...)'}">
-        <div class="arrow-btn ${provider}" onclick="submitUrl('${provider}')">
+        <div class="arrow-btn" style="background-color: ${arrowColor};" onclick="submitUrl('${provider}')">
           <img src="${provider === 'apple' ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
         </div>
         <a class="help-link" href="${provider === 'apple' ? 'https://support.apple.com/en-us/118235' : 'https://support.spotify.com/us/article/share-links/'}" target="_blank">
@@ -207,16 +194,19 @@
       const valid = provider === 'apple' ? url.includes("music.apple.com") : url.includes("open.spotify.com/playlist");
       if (!valid) return alert("Please enter a valid playlist URL.");
       document.getElementById("provider").classList.remove("active");
+
+      const arrowColor = provider === 'apple' ? 'var(--apple-pink)' : 'var(--spotify-green)';
       const box = document.getElementById("nameEmail");
       const isApple = provider === 'apple';
       const color = isApple ? 'black' : 'white';
+
       box.innerHTML = `
         <h1 style="color:${color}">What's your name?</h1>
         <input id="userName" type="text" placeholder="First & Last Name">
         <h1 style="color:${color};margin-top:2rem">What's your email?</h1>
         <p style="color:${color}">We need this to find your specific order.</p>
         <input id="userEmail" type="text" placeholder="email@example.com">
-        <div class="arrow-btn ${provider}" style="margin-top:1rem" onclick="showConfirmation()">
+        <div class="arrow-btn" style="background-color: ${arrowColor};margin-top:1rem" onclick="showConfirmation()">
           <img src="${isApple ? 'sf_arrow.png' : 'sptfy_arrow.png'}" style="height:16px">
         </div>
       `;
