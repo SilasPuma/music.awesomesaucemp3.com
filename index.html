@@ -150,20 +150,18 @@
   <div class="screen" id="confirmation"></div>
 
   <script>
-    const screens = ["welcome", "step1", "step2"];
-    let currentStep = 0;
     let selectedProvider = null;
 
-    function nextStep() {
-      document.getElementById(screens[currentStep])?.classList.remove("active");
-      currentStep++;
-      if (screens[currentStep]) {
-        document.getElementById(screens[currentStep])?.classList.add("active");
-      }
-    }
+    // Replace nextStep logic with time-based fades
+    setTimeout(() => {
+      document.getElementById("welcome").classList.remove("active");
+      document.getElementById("step1").classList.add("active");
+    }, 2000);
 
-    setTimeout(nextStep, 2000);
-    setTimeout(nextStep, 4000);
+    setTimeout(() => {
+      document.getElementById("step1").classList.remove("active");
+      document.getElementById("step2").classList.add("active");
+    }, 4000);
 
     function chooseProvider(provider) {
       selectedProvider = provider;
